@@ -1,15 +1,22 @@
-import {
-    createStackNavigator,
-    createMaterialTopTabNavigator,
-    createBottomTabNavigator,
-    createSwitchNavigator,
-    createAppContainer
-} from 'react-navigation'
+import { 
+    createStackNavigator, 
+    createAppContainer,
+    createSwitchNavigator 
+} from 'react-navigation';
+// 引入redux
+import { connect } from 'react-redux';
+import { 
+    createReactNavigationReduxMiddleware,
+    createReduxContainer 
+} from 'react-navigation-redux-helpers';
 import WelcomePage from '../page/WelcomPage'
 import HomePage from '../page/HomePage'
 import DetailPage from '../page/DetailPage'
+import Register from '../page/Register'
 
-const InitNavigator = createStackNavigator({
+export const rootCom = "Init"; // 设置根路由
+
+const InitNavigation = createStackNavigator({
     WelcomePage: {
         screen: WelcomePage,
         navigationOptions: {
@@ -18,34 +25,50 @@ const InitNavigator = createStackNavigator({
     }
 })
 
-const MainNavigator = createStackNavigator({
-    // 路由配置
+const MainNavigation = createStackNavigator({
     HomePage: {
         screen: HomePage,
+        navigationOptions: {
+            headerTitle: null
+        }
     },
     DetailPage: {
         screen: DetailPage,
-        navigationOptions: props => {
-            const { navigation } = props;
-            return {
-                headerTitle: navigation.state.params.name
-            }
+        navigationOptions: {
+            headerTitle: '详情页'
+        }
+    },
+    Register: {
+        screen: Register,
+        navigationOptions: {
+            headerTitle: '注册'
         }
     }
-},{
-    // 导航器配置
-    mode: 'card'
 })
 
-// export default createAppContainer(MainNavigator);
+// export default createAppContainer(MainNavigation);
 
-export default createAppContainer(
+export const RootNavigator = createAppContainer(
     createSwitchNavigator({
-        Init: InitNavigator,
-        Main: MainNavigator
-    }, {
-        navigationOptions: {
-            header: null
-        }
+        Init: InitNavigation,
+        Main: MainNavigation
     })
 )
+
+export const middleware = createReactNavigationReduxMiddleware(
+    state => state.nav,
+    "root"
+)
+
+// root 是一个 key
+const AppWithNavigationState = createReduxContainer(RootNavigator, 'root');
+
+// state 到 props 的映射关系
+const mapStateToProps = state => {
+    return {
+        state: state.nav
+    }
+}
+
+// 使用Redux 的 connect 函数再封装一个高阶组件，连接React 组件与 Redux Store
+export default connect(mapStateToProps)(AppWithNavigationState);

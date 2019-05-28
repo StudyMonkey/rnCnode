@@ -1,37 +1,45 @@
-import React, {Component} from 'react';
-import { Text, View, StyleSheet} from 'react-native';
+import React, { Component } from 'react'
+import { View, Text, StyleSheet } from 'react-native'
+import NavigationUtil from '../navigation/NavigationUtil'
 
-export default class WelcomePage extends Component {
+export default class WelcomePage extends Component{
 
-  componentDidMount () {
-    this.timer = setTimeout(() => {
-        console.log(this.props);
-        const { navigation } = this.props;
-        navigation.navigate("Main")
-    }, 3000)
-  }
+    constructor(props){
+        super(props);
+        console.disableYellowBox = true;
+    }
 
-  componentWillUnmount () {
-    this.timer && clearTimeout(this.timer)
-  }
-  
-  render() {
-    const { navigation } = this.props;
-    return (
-      <View style={styles.welcomeBox}>
-          <Text>This is welcome page</Text>
-      </View>
-    );
-  }
+    componentDidMount(){
+        this.timer = setTimeout ( () => {
+            NavigationUtil.resetToHomePage(this.props);
+        }, 200)
+    }
+
+    componentWillUnmount(){
+        this.timer && clearTimeout(this.timer)
+    }
+
+    render(){
+        return (
+            <View style={ styles.welcomeWrap }>
+                <Text style={ styles.welcomeWord }>
+                    Welcome to RN
+                </Text>
+            </View>
+        )
+    }
 }
 
 const styles = StyleSheet.create({
-    welcomeBox: {
+    welcomeWrap: {
+        height: "100%",
         alignItems: "center",
-        justifyContent: "center",
-        fontSize: 40,
-        color: "blue",
-    }   
+        justifyContent: "center"
+    },
+    welcomeWord: {
+        color: "red",
+        fontSize: 40
+    }
 })
 
 
